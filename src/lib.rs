@@ -63,7 +63,7 @@
 //! ```
 //! 
 //! For more examples and list of supported LaTeX commands, please check 
-//! [`examples/equations.rs`](https://github.com/osanshouo/latex2mathml/blob/master/examples/equations.rs) 
+//! [`examples/equations.rs`](https://github.com/osanshouo/latex2mathml/blob/master/examples/equations.rs)
 //! and [`examples/document.rs`](https://github.com/osanshouo/latex2mathml/blob/master/examples/document.rs).
 //! 
 
@@ -311,6 +311,8 @@ mod tests {
             (r"\overset{n}{X}", "<mover><mi>X</mi><mi>n</mi></mover>"),
             (r"\int_0^1 dx",  r#"<msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup><mi>d</mi><mi>x</mi>"#),
             (r"\int^1_0 dx",  r#"<msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup><mi>d</mi><mi>x</mi>"#),
+            (r"\alpha_{2}^{4}",  r#"<msubsup><mi>α</mi><mn>2</mn><mn>4</mn></msubsup>"#),
+            (r"\alpha_{4}^{2}",  r#"<msubsup><mi>α</mi><mn>2</mn><mn>4</mn></msubsup>"#),
             (r"\bm{x}",       r#"<mi mathvariant="bold-italic">x</mi>"#),
             (r"\mathbb{R}",   r#"<mi mathvariant="double-struck">R</mi>"#),
             (r"\sum_{i = 0}^∞ i", r#"<munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow><mi mathvariant="normal">∞</mi></munderover><mi>i</mi>"#),

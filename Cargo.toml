@@ -1,8 +1,8 @@
 [package]
 name = "latex2mathml"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["Hiromu Sugiura <h.sugiura0705@outlook.com>"]
-edition = "2018"
+edition = "2024"
 
 description   = "Convert LaTeX equations to MathML"
 repository    = "https://github.com/osanshouo/latex2mathml"

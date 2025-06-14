@@ -51,8 +51,18 @@ impl fmt::Display for Node {
                 None      => write!(f, "<mi>{}</mi>", fun),
             },
             Node::Space(space) => write!(f, r#"<mspace width="{}em"/>"#, space),
-            Node::Subscript(a, b) => write!(f, "<msub>{}{}</msub>", a, b),
-            Node::Superscript(a, b) => write!(f, "<msup>{}{}</msup>", a, b),
+            Node::Subscript(target, b) => {
+                match &**b {
+                    Node::Superscript(sub,sup) =>  write!(f, "<msubsup>{}{}{}</msubsup>", target, sub, sup),
+                    _ => write!(f, "<msub>{}{}</msub>", target, b),
+                }
+            },
+            Node::Superscript(target, b) => {
+                match &**b {
+                    Node::Subscript(sup,sub) =>  write!(f, "<msubsup>{}{}{}</msubsup>", target, sub, sup),
+                    _ => write!(f, "<msup>{}{}</msup>", target, b),
+                }
+            },
             Node::SubSup{target, sub, sup} => write!(f, "<msubsup>{}{}{}</msubsup>", target, sub, sup),
             Node::OverOp(op, acc, target) => write!(f, r#"<mover>{}<mo accent="{}">{}</mo></mover>"#, target, acc, op),
             Node::UnderOp(op, acc, target) => write!(f, r#"<munder>{}<mo accent="{}">{}</mo></munder>"#, target, acc, op),

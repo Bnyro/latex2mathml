@@ -84,8 +84,8 @@ impl fmt::Display for ColumnAlign {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ColumnAlign::Center => write!(f, r#""#),
-            ColumnAlign::Left => write!(f, r#" columnalign=left"#),
-            ColumnAlign::Right => write!(f, r#" columnalign=right"#),
+            ColumnAlign::Left => write!(f, r#" columnalign="left""#),
+            ColumnAlign::Right => write!(f, r#" columnalign="right""#),
         }
     }
 }
