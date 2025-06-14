@@ -4,4 +4,8 @@
 
 ### Bug Fix
   - Fix missing quote in ColumnAlign left/right (pull request from bvgastel)
-  - Fix issue 10 (simulatenous superscript/subscript)
+  - Fix simulatenous superscript/subscript (Issue 10 of initial repo)
+  - Fix spaces being deleted inside mtext tag (Issue 11 of initial repo)
+
+### Added
+  - Support for piecewise equation (Issue 12 of initial repo)

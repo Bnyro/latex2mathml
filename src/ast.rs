@@ -28,6 +28,7 @@ pub enum Node {
     SizedParen{ size: &'static str, paren: &'static str },
     Text(String),
     Matrix(Vec<Node>, ColumnAlign),
+    Piecewise(Vec<Node>),
     Ampersand,
     NewLine,
     Slashed(Box<Node>),
@@ -105,13 +106,55 @@ impl fmt::Display for Node {
                                 mathml.push_str("<mtd>")
                             }
                         },
-                        node => { mathml = format!("{}{}", mathml, node); },
+                        node => mathml.push_str(&node.to_string()),
                     }
                 }
                 mathml.push_str("</mtd></mtr></mtable>");
                 
                 write!(f, "{}", mathml)
             },
+            Node::Piecewise(content) => {
+                let mut mathml = format!("<piecewise>");
+                let mut cond = String::with_capacity(32);
+                let mut expr = String::with_capacity(32);
+                let mut is_expr: bool = true;
+                for node in content.iter() {
+                    match node {
+                        Node::NewLine => {
+                            if !cond.is_empty() || !expr.is_empty() {
+                                mathml.push_str("<piece>");
+                                if !cond.is_empty() {
+                                    mathml.push_str(&format!("<apply>{cond}</apply>"));
+                                }
+                                if !expr.is_empty() {
+                                    mathml.push_str(&format!("<apply>{expr}</apply>"));
+                                }
+                                mathml.push_str("</piece>");
+                            }
+                            expr.clear();
+                            cond.clear();
+                            is_expr = true;
+                        },
+                        // Start of the condition: set is_expr to false
+                        Node::Ampersand => is_expr = false,
+                        // Save condition/expression nodes in a separate string since order is reversed in MathML
+                        node if is_expr => expr.push_str(&node.to_string()),
+                        node  => cond.push_str(&node.to_string()),
+                    }
+                }
+                if !cond.is_empty() || !expr.is_empty() {
+                    mathml.push_str("<piece>");
+                    if !cond.is_empty() {
+                        mathml.push_str(&format!("<apply>{cond}</apply>"));
+                    }
+                    if !expr.is_empty() {
+                        mathml.push_str(&format!("<apply>{expr}</apply>"));
+                    }
+                    mathml.push_str("</piece>");
+                }
+                mathml.push_str("</piecewise>");
+                write!(f, "{}", mathml)
+            }
             Node::Text(text) => write!(f, "<mtext>{}</mtext>", text),
             Node::Style(display, content) => match display {
                 Some(DisplayStyle::Block)  => write!(f, r#"<mstyle displaystyle="true">{}</mstyle>"#, content),

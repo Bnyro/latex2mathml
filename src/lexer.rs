@@ -14,6 +14,7 @@ use super::{
 pub(crate) struct Lexer<'a> {
     input: std::str::Chars<'a>,
     pub(crate) skip_ws: bool,
+    pub(crate) tok: char,
     pub(crate) cur: char,
     pub(crate) peek: char,
 }
@@ -24,6 +25,7 @@ impl<'a> Lexer<'a> {
         let mut lexer = Lexer { 
             skip_ws: true,
             input: input.chars(),
+            tok:  '\u{0}',
             cur:  '\u{0}',
             peek: '\u{0}',
         };
@@ -34,10 +36,10 @@ impl<'a> Lexer<'a> {
 
     /// 1 文字進む.
     pub(crate) fn read_char(&mut self) -> char {
-        let c = self.cur;
+        self.tok = self.cur;
         self.cur = self.peek;
         self.peek = self.input.next().unwrap_or('\u{0}');
-        c
+        self.tok
     }
 
     /// 空白文字をスキップする.
@@ -117,6 +119,7 @@ impl<'a> Lexer<'a> {
                 }
             },
         };
+        // println!("[next_token] : Token={token:?} | lexer char = {:?} / {:?}", self.tok, self.cur);
         self.read_char();
         token
     }

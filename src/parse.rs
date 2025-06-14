@@ -315,19 +315,27 @@ impl<'a> Parser<'a> {
                     (ColumnAlign::Left, "matrix".to_owned())
                 } else { (ColumnAlign::Center, environment) };
                 // \begin..\end の中身を読み込む
-                let content = match self.parse_group(&Token::End)? {
+                let mut content = match self.parse_group(&Token::End)? {
                     Node::Row(content) => content,
                     content => vec![content],
                 };
-                let content = Node::Matrix(content, columnalign);
 
                 // 環境名により処理を分岐
                 let matrix = match environment.as_str() {
-                    "matrix"  => content,
-                    "pmatrix" => Node::Fenced{open: "(", close: ")", content: Box::new(content)}, 
-                    "bmatrix" => Node::Fenced{open: "[", close: "]", content: Box::new(content)}, 
-                    "vmatrix" => Node::Fenced{open: "|", close: "|", content: Box::new(content)}, 
-                    environment => { return Err(LatexError::UnknownEnvironment(environment.to_owned())); },
+                    "matrix"  => Node::Matrix(content, columnalign),
+                    "pmatrix" => Node::Fenced{open: "(", close: ")", content: Box::new(Node::Matrix(content, columnalign))},
+                    "bmatrix" => Node::Fenced{open: "[", close: "]", content: Box::new(Node::Matrix(content, columnalign))},
+                    "vmatrix" => Node::Fenced{open: "|", close: "|", content: Box::new(Node::Matrix(content, columnalign))},
+                    "cases"   => Node::Piecewise(content),
+                    // For equation environment: if only 1 element simply ignore the environement and expose directly the element
+                    "equation" => {
+                        if content.len() == 1 {
+                            content.pop().unwrap()
+                        } else {
+                            Node::Piecewise(content)
+                        }
+                    },
+                    environment => {return Err(LatexError::UnknownEnvironment(environment.to_owned()));},
                 };
                 self.next_token();
                 let _ = self.parse_text();
@@ -341,11 +349,7 @@ impl<'a> Parser<'a> {
                 Node::Function(function, None)
             },
             Token::Text => {
-                self.next_token();
-                // テキストを読み込む
-                self.l.skip_ws = false;
-                let text = self.parse_text();
-                self.l.skip_ws = true;
+                let text = self.parse_raw_text();
                 Node::Text(text)
             },
             Token::Ampersand => Node::Ampersand,
@@ -402,6 +406,22 @@ impl<'a> Parser<'a> {
         }
         // 終わったら最後の `}` を cur が指した状態で抜ける
 
+        text
+    }
+
+    /// Parse a content of a text command in raw mode
+    fn parse_raw_text(&mut self) -> String {
+        self.l.skip_ws = false;
+        let mut text = String::new();
+        loop {
+            self.next_token();
+            match &self.peek_token {
+                Token::RBrace => break,
+                _ => text.push(self.l.tok),
+            }
+        }
+        self.l.skip_ws = true;
+        self.next_token();
         text
     }
 }

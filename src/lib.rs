@@ -328,6 +328,18 @@ mod tests {
                 r#"<mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd><mi>x</mi></mtd></mtr><mtr><mtd><mi>y</mi></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow>"#
             ),
             (r"\frac{\text{number of apples}}{\text{number of students}}", r#"<mfrac><mtext>number of apples</mtext><mtext>number of students</mtext></mfrac>"#),
+            (r"\text{j=k}", r#"<mtext>j=k</mtext>"#),
+            (
+                r"\frac{\partial S_{i,j}}{\partial z_{i,k}} =
+                    \begin{equation}
+                        \begin{cases}
+                            S_{i,j}\cdot(1-S_{i,k}) , & \text{j=k} \\ \\
+                            -S_{i,j} \cdot S_{i,k} , & j \ne k
+                        \end{cases}
+                    \end{equation}",
+
+                r#"<mfrac><mrow><mo mathvariant="italic">∂</mo><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mo mathvariant="italic">∂</mo><msub><mi>z</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></mfrac><mo>=</mo><piecewise><piece><apply><mtext>j=k</mtext></apply><apply><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>·</mo><mo>(</mo><mn>1</mn><mo>-</mo><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>)</mo><mo>,</mo></apply></piece><piece><apply><mi>j</mi><mo>≠</mo><mi>k</mi></apply><apply><mo>-</mo><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>·</mo><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo></apply></piece></piecewise>"#
+            ),
         ];
 
         for (problem, answer) in problems.iter() {
