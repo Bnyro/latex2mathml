@@ -312,7 +312,7 @@ mod tests {
             (r"\int_0^1 dx",  r#"<msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup><mi>d</mi><mi>x</mi>"#),
             (r"\int^1_0 dx",  r#"<msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup><mi>d</mi><mi>x</mi>"#),
             (r"\alpha_{2}^{4}",  r#"<msubsup><mi>α</mi><mn>2</mn><mn>4</mn></msubsup>"#),
-            (r"\alpha_{4}^{2}",  r#"<msubsup><mi>α</mi><mn>2</mn><mn>4</mn></msubsup>"#),
+            (r"\alpha^{4}_{2}",  r#"<msubsup><mi>α</mi><mn>2</mn><mn>4</mn></msubsup>"#),
             (r"\bm{x}",       r#"<mi mathvariant="bold-italic">x</mi>"#),
             (r"\mathbb{R}",   r#"<mi mathvariant="double-struck">R</mi>"#),
             (r"\sum_{i = 0}^∞ i", r#"<munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow><mi mathvariant="normal">∞</mi></munderover><mi>i</mi>"#),
@@ -327,6 +327,7 @@ mod tests {
                 r"\begin{pmatrix} x \\ y \end{pmatrix}", 
                 r#"<mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd><mi>x</mi></mtd></mtr><mtr><mtd><mi>y</mi></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow>"#
             ),
+            (r"\frac{\text{number of apples}}{\text{number of students}}", r#"<mfrac><mtext>number of apples</mtext><mtext>number of students</mtext></mfrac>"#),
         ];
 
         for (problem, answer) in problems.iter() {

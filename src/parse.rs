@@ -343,7 +343,9 @@ impl<'a> Parser<'a> {
             Token::Text => {
                 self.next_token();
                 // テキストを読み込む
+                self.l.skip_ws = false;
                 let text = self.parse_text();
+                self.l.skip_ws = true;
                 Node::Text(text)
             },
             Token::Ampersand => Node::Ampersand,

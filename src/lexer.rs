@@ -13,6 +13,7 @@ use super::{
 #[derive(Debug, Clone)]
 pub(crate) struct Lexer<'a> {
     input: std::str::Chars<'a>,
+    pub(crate) skip_ws: bool,
     pub(crate) cur: char,
     pub(crate) peek: char,
 }
@@ -21,6 +22,7 @@ impl<'a> Lexer<'a> {
     /// 入力ソースコードを受け取り Lexer インスタンスを生成する.
     pub(crate) fn new(input: &'a str) -> Self {
         let mut lexer = Lexer { 
+            skip_ws: true,
             input: input.chars(),
             cur:  '\u{0}',
             peek: '\u{0}',
@@ -40,7 +42,7 @@ impl<'a> Lexer<'a> {
 
     /// 空白文字をスキップする.
     fn skip_whitespace(&mut self) {
-        while self.cur == ' ' || self.cur == '\t' || self.cur == '\n' || self.cur == '\r' {
+        while (self.cur == ' ' && self.skip_ws) || self.cur == '\t' || self.cur == '\n' || self.cur == '\r' {
             self.read_char();
         }
     }
@@ -118,6 +120,8 @@ impl<'a> Lexer<'a> {
         self.read_char();
         token
     }
+
+
 }
 
 #[cfg(test)]
