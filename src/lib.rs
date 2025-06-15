@@ -97,9 +97,10 @@ fn convert_content(latex: &str) -> Result<String, error::LatexError> {
     let mut p = parse::Parser::new(l);
     let nodes = p.parse()?;
 
-    let mathml = nodes.iter()
-        .map(|node| format!("{}", node))
-        .collect::<String>();
+    let mut mathml = String::with_capacity(nodes.len());
+    for node in nodes.iter() {
+        mathml.push_str(&node.to_string());
+    }
     
     Ok(mathml)
 }
@@ -156,7 +157,7 @@ pub fn replace(input: &str) -> Result<String, error::LatexError> {
 
     // `$$` に一致するインデックスのリストを生成
     let idx = input.windows(2).enumerate()
-        .filter_map(|(i, window)| if window == &[b'$', b'$'] {
+        .filter_map(|(i, window)| if window == b"$$" {
             Some(i)
         } else { None }).collect::<Vec<usize>>();
     if idx.len()%2 != 0 {
@@ -250,7 +251,7 @@ pub fn replace(input: &str) -> Result<String, error::LatexError> {
 pub fn convert_html<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn std::error::Error>> {
     if path.as_ref().is_dir() {
         for entry in fs::read_dir(path)?.filter_map(Result::ok) {
-            convert_html(&entry.path())?
+            convert_html(entry.path())?
         }
     } else if path.as_ref().is_file() {
         if let Some(ext) = path.as_ref().extension() {
@@ -269,7 +270,7 @@ pub fn convert_html<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn std::error::E
 fn convert_latex<P: AsRef<Path>>(fp: P) -> Result<(), Box<dyn std::error::Error>> {
     let original = fs::read_to_string(&fp)?;
     let converted = replace(&original)?;
-    if &original != &converted {
+    if original != converted {
         let mut fp = fs::File::create(fp)?;
         fp.write_all(converted.as_bytes())?;
     }

@@ -44,10 +44,7 @@ pub enum Token {
 
 impl Token {
     pub(crate) fn acts_on_a_digit(&self) -> bool {
-        match self {
-            Token::Sqrt | Token::Frac | Token::Binom(_) | Token::Style(_) => true,
-            _ => false,
-        }
+        matches!(self, Token::Sqrt | Token::Frac | Token::Binom(_) | Token::Style(_) )
     }
 
     pub fn from_command(command: &str) -> Token {

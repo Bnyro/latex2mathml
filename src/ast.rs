@@ -76,9 +76,13 @@ impl fmt::Display for Node {
                 None      => write!(f, "<msqrt>{}</msqrt>", content),
             },
             Node::Frac(num, denom, lt) => write!(f, "<mfrac{}>{}{}</mfrac>", lt, num, denom),
-            Node::Row(vec) => write!(f, "<mrow>{}</mrow>", 
-                vec.iter().map(|node| format!("{}", node)).collect::<String>()
-            ),
+            Node::Row(vec) => {
+                write!(f, "<mrow>")?;
+                for node in vec.iter() {
+                    write!(f, "{}", node)?;
+                }
+                write!(f, "</mrow>")
+            },
             Node::Fenced{open, close, content} => {
                 write!(f, r#"<mrow><mo stretchy="true" form="prefix">{}</mo>{}<mo stretchy="true" form="postfix">{}</mo></mrow>"#, open, content, close)
             },
@@ -114,7 +118,7 @@ impl fmt::Display for Node {
                 write!(f, "{}", mathml)
             },
             Node::Piecewise(content) => {
-                let mut mathml = format!("<piecewise>");
+                let mut mathml = "<piecewise>".to_string();
                 let mut cond = String::with_capacity(32);
                 let mut expr = String::with_capacity(32);
                 let mut is_expr: bool = true;
