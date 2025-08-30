@@ -341,6 +341,7 @@ mod tests {
 
                 r#"<mfrac><mrow><mo mathvariant="italic">∂</mo><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mrow><mo mathvariant="italic">∂</mo><msub><mi>z</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></mfrac><mo>=</mo><piecewise><piece><apply><mtext>j=k</mtext></apply><apply><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>·</mo><mo>(</mo><mn>1</mn><mo>-</mo><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>)</mo><mo>,</mo></apply></piece><piece><apply><mi>j</mi><mo>≠</mo><mi>k</mi></apply><apply><mo>-</mo><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>·</mo><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo></apply></piece></piecewise>"#
             ),
+            (r"\color{red} 1 + 3", r#"<mstyle style="color: red;"><mn>1</mn></mstyle><mo>+</mo><mn>3</mn>"#),
         ];
 
         for (problem, answer) in problems.iter() {

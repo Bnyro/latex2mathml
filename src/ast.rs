@@ -33,6 +33,7 @@ pub enum Node {
     NewLine,
     Slashed(Box<Node>),
     Style(Option<DisplayStyle>, Box<Node>),
+    Color(String, Box<Node>),
     Undefined(String),
 }
 
@@ -165,6 +166,7 @@ impl fmt::Display for Node {
                 Some(DisplayStyle::Inline) => write!(f, r#"<mstyle displaystyle="false">{}</mstyle>"#, content),
                 None => write!(f, "<mstyle>{}</mstyle>", content),
             },
+            Node::Color(color, content) => write!(f, r#"<mstyle style="color: {color};">{content}</mstyle>"#),
             node => write!(f, "<mtext>[PARSE ERROR: {:?}]</mtext>", node),
         }
     }

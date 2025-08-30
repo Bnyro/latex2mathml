@@ -234,6 +234,29 @@ impl<'a> Parser<'a> {
                 let node = self.parse_node()?;
                 set_variant(node, var)
             },
+            Token::Color => {
+                self.next_token();
+                self.next_token();
+                let mut color = String::new();
+                loop {
+                    match &self.cur_token {
+                        Token::Letter(c, _) => {
+                            color.push(*c);
+                        }
+                        Token::Number(num) => {
+                            color.push_str(num);
+                        }
+                        _ => {
+                            break;
+                        }
+                    }
+
+                    self.next_token();
+                }
+                self.next_token();
+                let node = self.parse_node()?;
+                Node::Color(color, Box::new(node))
+            },
             Token::Integral(int) => {
                 let int = *int;
                 match self.peek_token {
