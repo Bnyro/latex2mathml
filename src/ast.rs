@@ -27,6 +27,7 @@ pub enum Node {
     OtherOperator(&'static str),
     SizedParen{ size: &'static str, paren: &'static str },
     Text(String),
+    Strikethrough(Box<Node>),
     Matrix(Vec<Node>, ColumnAlign),
     Piecewise(Vec<Node>),
     Ampersand,
@@ -162,6 +163,7 @@ impl fmt::Display for Node {
                 write!(f, "{}", mathml)
             }
             Node::Text(text) => write!(f, "<mtext>{}</mtext>", text),
+            Node::Strikethrough(content) => write!(f, r#"<menclose notation="updiagonalstrike">{content}</menclose>"#),
             Node::Style(display, content) => match display {
                 Some(DisplayStyle::Block)  => write!(f, r#"<mstyle displaystyle="true">{}</mstyle>"#, content),
                 Some(DisplayStyle::Inline) => write!(f, r#"<mstyle displaystyle="false">{}</mstyle>"#, content),

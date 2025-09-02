@@ -384,6 +384,12 @@ impl<'a> Parser<'a> {
                 let text = self.parse_raw_text();
                 Node::Text(text)
             },
+            Token::Not => {
+                self.next_token();
+
+                let content = self.parse_node()?;
+                Node::Strikethrough(Box::from(content))
+            },
             Token::Ampersand => Node::Ampersand,
             Token::NewLine => Node::NewLine,
             token => Node::Undefined(format!("{:?}", token)),
