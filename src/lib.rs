@@ -344,7 +344,7 @@ mod tests {
             (r"\color{red} 1 + 3 \color{green} 5", r#"<mstyle style="color: red;"><mrow><mn>1</mn><mo>+</mo><mn>3</mn></mrow></mstyle><mstyle style="color: green;"><mn>5</mn></mstyle>"#),
             (r"\phantom{foo}", r#"<mphantom><mrow><mi>f</mi><mi>o</mi><mi>o</mi></mrow></mphantom>"#),
             (r"a \not\equiv b \pmod 3", r#"<mi>a</mi><menclose notation="updiagonalstrike"><mo>≡</mo></menclose><mi>b</mi><mi>mod</mi><mn>3</mn>"#),
-            (r"\nolimits_a^b", r#"<msubsup><mi></mi><mi>a</mi><mi>b</mi></msubsup>"#)
+            (r"\nolimits_a^b", r#"<msubsup><mi></mi><mi>a</mi><mi>b</mi></msubsup>"#),
         ];
 
         for (problem, answer) in problems.iter() {

@@ -344,7 +344,7 @@ impl<'a> Parser<'a> {
 
                 // 環境名により処理を分岐
                 let matrix = match environment.as_str() {
-                    "matrix"  => Node::Matrix(content, columnalign),
+                    "matrix" | "array" => Node::Matrix(content, columnalign),
                     "pmatrix" => Node::Fenced{open: "(", close: ")", content: Box::new(Node::Matrix(content, columnalign))},
                     "bmatrix" => Node::Fenced{open: "[", close: "]", content: Box::new(Node::Matrix(content, columnalign))},
                     "vmatrix" => Node::Fenced{open: "|", close: "|", content: Box::new(Node::Matrix(content, columnalign))},
