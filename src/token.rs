@@ -79,6 +79,8 @@ impl Token {
             "color"  => Token::Color,
             "sqrt"   => Token::Sqrt,
             "frac"   => Token::Frac,
+            "tfrac"   => Token::Frac,
+            "dfrac"   => Token::Frac,
             "left"   => Token::Left,
             "right"  => Token::Right,
             "middle"  => Token::Middle,
