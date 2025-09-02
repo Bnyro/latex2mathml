@@ -167,7 +167,7 @@ impl fmt::Display for Node {
                 None => write!(f, "<mstyle>{}</mstyle>", content),
             },
             Node::Color(color, content) => write!(f, r#"<mstyle style="color: {color};">{content}</mstyle>"#),
-            node => write!(f, "<mtext>[PARSE ERROR: {:?}]</mtext>", node),
+            node => write!(f, "<merror>[PARSE ERROR: {:?}]</merror>", node),
         }
     }
 }
