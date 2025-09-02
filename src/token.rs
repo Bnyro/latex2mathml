@@ -40,6 +40,7 @@ pub enum Token {
     OperatorName,
     Slashed,
     Text,
+    Phantom,
     Command(String),
 }
 
@@ -71,6 +72,9 @@ impl Token {
             "texttt"  => Token::Style(Variant::Monospace),
             "boldsymbol" => Token::Style(Variant::BoldItalic),
             "text"   => Token::Text,
+            "phantom" => Token::Phantom,
+            "hphantom" => Token::Phantom,
+            "vphantom" => Token::Phantom,
             "color"  => Token::Color,
             "sqrt"   => Token::Sqrt,
             "frac"   => Token::Frac,

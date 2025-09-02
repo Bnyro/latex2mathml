@@ -371,6 +371,18 @@ impl<'a> Parser<'a> {
                 let function = self.parse_text();
                 Node::Function(function, None)
             },
+            Token::Phantom => {
+                self.next_token();
+                if self.cur_token_is(&Token::LBrace) {
+                    self.next_token();
+
+                    let content = self.parse_group(&Token::RBrace)?;
+                self.next_token();
+                Node::Phantom(Box::new(content))
+                } else {
+                    Node::Phantom(Box::from(Node::Text(" ".to_string())))
+                }
+            }
             Token::Text => {
                 let text = self.parse_raw_text();
                 Node::Text(text)
