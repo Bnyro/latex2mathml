@@ -235,27 +235,17 @@ impl<'a> Parser<'a> {
                 set_variant(node, var)
             },
             Token::Color => {
-                self.next_token();
-                self.next_token();
-                let mut color = String::new();
-                loop {
-                    match &self.cur_token {
-                        Token::Letter(c, _) => {
-                            color.push(*c);
-                        }
-                        Token::Number(num) => {
-                            color.push_str(num);
-                        }
-                        _ => {
-                            break;
-                        }
-                    }
-
+                if self.peek_token_is(Token::LBrace) {
+                    let color = self.parse_raw_text();
                     self.next_token();
+
+                    let node = self.parse_node()?;
+                    Node::Color(color, Box::new(node))
+                } else {
+                    return Err(LatexError::MissingParensethis{
+                        location: Token::LBrace, got: self.cur_token.clone(),
+                    })
                 }
-                self.next_token();
-                let node = self.parse_node()?;
-                Node::Color(color, Box::new(node))
             },
             Token::Integral(int) => {
                 let int = *int;
@@ -374,8 +364,6 @@ impl<'a> Parser<'a> {
             Token::Phantom => {
                 self.next_token();
                 if self.cur_token_is(&Token::LBrace) {
-                    self.next_token();
-
                     let content = self.parse_group(&Token::RBrace)?;
                 self.next_token();
                 Node::Phantom(Box::new(content))
