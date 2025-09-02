@@ -11,6 +11,7 @@ pub(crate) struct Parser<'a> {
     l: Lexer<'a>,
     cur_token: Token,
     peek_token: Token,
+    keep_current: bool,
 }
 impl<'a> Parser<'a> {
     pub(crate) fn new(l: Lexer<'a>) -> Self {
@@ -18,6 +19,7 @@ impl<'a> Parser<'a> {
             l, 
             cur_token: Token::Illegal('\u{0}'),
             peek_token: Token::Illegal('\u{0}'),
+            keep_current: false,
         };
         p.next_token();
         p.next_token();
@@ -25,6 +27,11 @@ impl<'a> Parser<'a> {
     }
 
     fn next_token(&mut self) {
+        if self.keep_current {
+            self.keep_current = false;
+            return;
+        }
+
         self.cur_token = self.peek_token.clone();
         self.peek_token = if 
             self.cur_token.acts_on_a_digit() && self.l.cur.is_ascii_digit() 
@@ -91,7 +98,7 @@ impl<'a> Parser<'a> {
             Token::Sqrt => {
                 self.next_token();
                 let degree = if self.cur_token_is(&Token::Paren("[")) {
-                    let degree = self.parse_group(&Token::Paren("]"))?;
+                    let degree = self.parse_group_until(&Token::Paren("]"))?;
                     self.next_token();
                     Some(Box::new(degree))
                 } else { None };
@@ -237,9 +244,11 @@ impl<'a> Parser<'a> {
             Token::Color => {
                 if self.peek_token_is(Token::LBrace) {
                     let color = self.parse_raw_text();
-                    self.next_token();
 
-                    let node = self.parse_node()?;
+                    let node = self.parse_group(&Token::Color)?;
+                    // don't seek to the next token, otherwise the
+                    // found color token would get skipped
+                    self.keep_current = true;
                     Node::Color(color, Box::new(node))
                 } else {
                     return Err(LatexError::MissingParensethis{
@@ -279,7 +288,7 @@ impl<'a> Parser<'a> {
                     _ => Node::Operator(int)
                 }
             },
-            Token::LBrace => self.parse_group(&Token::RBrace)?,
+            Token::LBrace => self.parse_group_until(&Token::RBrace)?,
             Token::Paren(paren) => Node::OtherOperator(paren),
             Token::Left => {
                 self.next_token();
@@ -290,7 +299,7 @@ impl<'a> Parser<'a> {
                         location: Token::Left, got: token.clone(),
                     })},
                 };
-                let content = self.parse_group(&Token::Right)?;
+                let content = self.parse_group_until(&Token::Right)?;
                 self.next_token();
                 let close = match &self.cur_token {
                     Token::Paren(close) => close,
@@ -328,7 +337,7 @@ impl<'a> Parser<'a> {
                     (ColumnAlign::Left, "matrix".to_owned())
                 } else { (ColumnAlign::Center, environment) };
                 // \begin..\end の中身を読み込む
-                let mut content = match self.parse_group(&Token::End)? {
+                let mut content = match self.parse_group_until(&Token::End)? {
                     Node::Row(content) => content,
                     content => vec![content],
                 };
@@ -364,7 +373,7 @@ impl<'a> Parser<'a> {
             Token::Phantom => {
                 self.next_token();
                 if self.cur_token_is(&Token::LBrace) {
-                    let content = self.parse_group(&Token::RBrace)?;
+                    let content = self.parse_group_until(&Token::RBrace)?;
                 self.next_token();
                 Node::Phantom(Box::new(content))
                 } else {
@@ -389,19 +398,27 @@ impl<'a> Parser<'a> {
         }
     }
 
+    /// Fails if the `end_token` can't be found before EOF
+    fn parse_group_until(&mut self, end_token: &Token) -> Result<Node, LatexError> {
+        let group = self.parse_group(end_token)?;
+
+        if self.cur_token_is(&Token::EOF) {
+            return Err(LatexError::UnexpectedToken{
+                expected: end_token.clone(),
+                got: self.cur_token.clone()
+            });
+        }
+
+        Ok(group)
+    }
+
+    /// Parse the group until `end_token` or EOF
     fn parse_group(&mut self, end_token: &Token) -> Result<Node, LatexError> {
         self.next_token();
         let mut nodes = Vec::new();
 
         while {
-            if self.cur_token_is(&Token::EOF) { // 閉じ括弧がないまま入力が終了した場合
-                return Err(LatexError::UnexpectedToken{
-                    expected: end_token.clone(),
-                    got: self.cur_token.clone()
-                });
-            }
-
-            !self.cur_token_is(end_token) 
+            !self.cur_token_is(end_token) && !self.cur_token_is(&Token::EOF) 
         } {
             nodes.push(
                 self.parse_node()?
