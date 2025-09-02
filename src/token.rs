@@ -43,6 +43,7 @@ pub enum Token {
     Text,
     Phantom,
     Command(String),
+    Ignore,
 }
 
 impl Token {
@@ -131,6 +132,7 @@ impl Token {
             "iint"   => Token::Integral('∬'),
             "iiint"  => Token::Integral('∭'),
             "oint"   => Token::Integral('∮'),
+            "nolimits" => Token::Function(""),
             "dot"       => Token::Over('\u{02d9}', Accent::True),
             "ddot"      => Token::Over('¨', Accent::True),
             "bar"       => Token::Over('¯', Accent::True),
@@ -215,6 +217,7 @@ impl Token {
             "sgn"    => Token::Function("sgn"),
             "abs"    => Token::Function("abs"),
             "pmod"   => Token::Function("mod"),
+            "bmod"   => Token::Function("mod"),
             "wp"     => Token::Function("℘"),
             "operatorname" => Token::OperatorName,
             "Alpha"      => Token::Letter('Α', Variant::Normal),
@@ -574,6 +577,7 @@ impl Token {
             "Vdash"     => Token::Operator('⊩'),
             "models"    => Token::Operator('⊨'),
             "slashed"   => Token::Slashed,
+            "big"       => Token::Ignore,
             command  => Token::Command(command.to_owned()),
         }
     }

@@ -390,6 +390,11 @@ impl<'a> Parser<'a> {
                 let content = self.parse_node()?;
                 Node::Strikethrough(Box::from(content))
             },
+            Token::Ignore => {
+                self.next_token();
+
+                self.parse_node()?
+            }
             Token::Ampersand => Node::Ampersand,
             Token::NewLine => Node::NewLine,
             token => Node::Undefined(format!("{:?}", token)),
