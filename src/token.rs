@@ -55,6 +55,8 @@ impl Token {
         match command {
             "mathrm"  => Token::Style(Variant::Normal),
             "textrm"  => Token::Style(Variant::Normal),
+            "mathstyle"  => Token::Style(Variant::Normal),
+            "textstyle"  => Token::Style(Variant::Normal),
             "mbox"  => Token::Style(Variant::Normal),
             "rm"  => Token::Style(Variant::Normal),
             "textit"  => Token::Style(Variant::Italic),
