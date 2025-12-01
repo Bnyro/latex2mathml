@@ -396,6 +396,7 @@ impl Token {
             "land"   => Token::Operator('∧'),
             "lor"    => Token::Operator('∨'),
             "sim"    => Token::Operator('∼'),
+            "thicksim" => Token::Operator('~'),
             "simeq"  => Token::Operator('≃'),
             "nsim"   => Token::Operator('≁'),
             "cong"   => Token::Operator('≅'),
